@@ -289,18 +289,16 @@
     createRandomTarget();
 
     function createRandomTarget() {
-      target.splice(0);
+  target.splice(0); // これは与えられたコード内でtarget配列をクリアしています
 
-      // TODO 正解となる数字をランダムに生成すること
-      // TODO 3つの0～9で構成された配列(かぶりなし)が生成されること
-      // 例: [8,2,0]
-
-      // この3行は削除する
-      target.push(0);
-      target.push(1);
-      target.push(2);
+  // 0から9までの数字をランダムに選んでtargetに追加する（かぶりなし）
+  while (target.length < 3) {
+    const randomNumber = Math.floor(Math.random() * 10); // 0～9の乱数生成
+    if (!target.includes(randomNumber)) {
+      target.push(randomNumber);
     }
-
+  }
+}
     function input(event) {
       const value = event.target.value;
       const btn = document.getElementById(`btn-${value}`);
@@ -346,21 +344,27 @@
     }
 
     function judge() {
-      let hit = 0;
-      let blow = 0;
+  let hit = 0;
+  let blow = 0;
 
-      // TODO targetとinputsを比較しhitとblowをカウントすること
-
-      const result = {
-        inputs: inputs.concat(),
-        hit: hit,
-        blow: blow,
-      };
-
-      results.push(result);
-
-      return result.hit == 3;
+  for (let i = 0; i < target.length; i++) {
+    if (target[i] === parseInt(inputs[i])) {
+      hit++;
+    } else if (target.includes(parseInt(inputs[i]))) {
+      blow++;
     }
+  }
+
+  const result = {
+    inputs: inputs.concat(),
+    hit: hit,
+    blow: blow,
+  };
+
+  results.push(result);
+
+  return result.hit === 3; // 全ての数字が正解の場合にtrueを返す
+}
 
     function reload() {
       const left = document.getElementById("input-left");
