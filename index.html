@@ -154,6 +154,10 @@
               9
             </button>
           </div>
+          <div class="stats">
+            <p>クリア回数: <span id="clear-count">0</span></p>
+            <p>平均質問回数: <span id="average-count">0</span></p>
+          </div>
           <div class="row">
             <button id="remove-btn" value="remove" onclick="toggleRemoveMode()">
               remove
@@ -286,6 +290,9 @@
     /* 解答上限*/
     const answerLimit = document.getElementsByClassName("tr").length;
     let removeMode = false;
+    let clearCount = 0
+    let totalQuestionCount = 0;
+
     createRandomTarget();
 
     function createRandomTarget() {
@@ -328,20 +335,27 @@
     }
 
     function enter() {
-      if (inputs.length == 3) {
-        const clear = judge();
-        inputs.splice(0);
-        reload();
-        if (clear) {
-          alert(`CLEAR!!\n正解は${target}`);
-          reset();
-        }
-        if (answerLimit <= results.length) {
-          alert(`失敗...\n正解は${target}`);
-          reset();
-        }
-      }
+  if (inputs.length == 3 || removeMode) {
+    const clear = judge();
+    inputs.splice(0);
+    totalQuestionCount++;
+
+    if (clear) {
+      clearCount++;
+      document.getElementById("clear-count").innerText = clearCount;
+      document.getElementById("average-count").innerText = (
+        totalQuestionCount / clearCount
+      ).toFixed(2);
+      alert(`CLEAR!!\n正解は${target}`);
+      reset(); 
     }
+    if (answerLimit <= results.length) {
+      alert(`失敗...\n正解は${target}`);
+      reset();
+    }
+  }
+}
+
 
     function judge() {
   let hit = 0;
@@ -416,14 +430,15 @@
     }
 
     function reset() {
-      createRandomTarget();
-      inputs.splice(0);
-      results.splice(0);
-      Array.from(document.getElementsByClassName("removed")).forEach((btn) => {
-        btn.classList.remove("removed");
-      });
-      reload();
-    }
+  createRandomTarget();
+  inputs.splice(0);
+  results.splice(0);
+  totalQuestionCount = 0; // 全質問回数をリセット
+  Array.from(document.getElementsByClassName("removed")).forEach((btn) => {
+    btn.classList.remove("removed");
+  });
+  reload();
+}
 
     function toggleRemoveMode() {
       removeMode = !removeMode;
